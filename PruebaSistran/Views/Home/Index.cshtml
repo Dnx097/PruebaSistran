@@ -1,0 +1,314 @@
+﻿@{
+    ViewData["Title"] = "Registro";
+}
+
+<div class="row">
+    <div class="col-sm-12">
+
+        <!--Inicio tarjeta-->
+        <div class="card">
+            <div class="card-header">Registro Personas</div>
+            <div class="card-body">
+
+                <button class="btn btn-success" id="btnNuevo">Nuevo Registro</button>
+
+                <hr />
+
+                <table class="table table-striped" id="tbRegistro">
+                    <thead>
+                        <tr>
+                            <th>Identificación</th>
+                            <th>Nombres</th>
+                            <th>Apellidos</th>
+                            <th>Fecha Nacimiento</th>
+                            <th>Celular</th>
+                            <th>Telefono Alternativo</th>
+                            <th>Correo Electronico</th>
+                            <th>Correo Electronico Alternativo</th>
+                            <th>Direccion</th>
+                            <th>Direccion Alternativa</th>
+                            <th></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                    </tbody>
+                </table>
+
+            </div>
+        </div>
+        <!--Fin tarjeta-->
+
+    </div>
+</div>
+
+
+
+<!--Inicio Modal-->
+<div class="modal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Detalle Registro</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <input type="hidden" id="txtIdRegistro" value="0" />
+                <div class="mb-2">
+                    <label>Identificacion</label>
+                    <input type="text" class="form-control" id="txtIdentificacion" oninput="this.value = this.value.replace(/[^0-9]/g, '').substring(0, 15)" />
+                </div>
+                <div class="mb-2">
+                    <label>Nombre</label>
+                    <input type="text" class="form-control" id="txtNombre" />
+                </div>
+                <div class="mb-2">
+                    <label>Apellidos</label>
+                    <input type="text" class="form-control" id="txtApellidos" />
+                </div>
+                <div class="mb-2">
+                    <label>Fecha Nacimiento</label>
+                    <input type="text" class="form-control" id="txtFechaNacimiento" />
+                </div>
+                <div class="mb-2">
+                    <label>Celular</label>
+                    <input type="text" class="form-control" id="txtCelular" oninput="this.value = this.value.replace(/[^0-9]/g, '').substring(0, 135)" />
+                </div>
+                <div class="mb-2">
+                    <label>Telefono alternativo</label>
+                    <input type="text" class="form-control" id="txtTelefonoAlternativo" oninput="this.value = this.value.replace(/[^0-9]/g, '').substring(0, 13)" />
+                </div>
+                <div class="mb-2">
+                    <label>Correo electronico</label>
+                    <input type="text" class="form-control" id="txtCorreoElectronico" />
+                </div>
+                <div class="mb-2">
+                    <label>Correo electronico alternativo</label>
+                    <input type="text" class="form-control" id="txtCorreoElectronicoAlternativo" />
+                </div>
+                <div class="mb-2">
+                    <label>Dirección</label>
+                    <input type="text" class="form-control" id="txtDireccion" />
+                </div>
+                <div class="mb-2">
+                    <label>Dirección alternativa</label>
+                    <input type="text" class="form-control" id="txtDireccionAlternativa" />
+                </div>
+
+            </div>
+
+            <div class="modal-footer">
+                <button type="button" class="btn btn-primary" id="btnGuardar">Guardar</button>
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+            </div>
+        </div>
+
+    </div>
+</div>
+</div>
+<!--Fin Modal-->
+@section Scripts {
+    <script>
+        const Modelo_base = {
+            idRegistro: 0,
+            identificacion: "",
+            nombres: "",
+            apellidos: "",
+            fechaNacimiento: "",
+            celular: 0,
+            telefonoAlternativo: 0,
+            correoElectronico: "",
+            correoElectronicoAlternativo: "",
+            direccion: "",
+            direccionAltenativa: ""
+        }
+
+        let registrado = 0;
+
+        $(document).ready(() => {
+            listaRegistro()
+        })
+
+        function mostrarModal(modelo) {
+            $("#txtIdRegistro").val(modelo.idRegistro);
+            $("#txtIdentificacion").val(modelo.identificacion);
+            $("#txtNombre").val(modelo.nombres);
+            $("#txtApellidos").val(modelo.apellidos);
+            $("#txtFechaNacimiento").val(modelo.fechaNacimiento);
+            $("#txtCelular").val(modelo.celular);
+            $("#txtTelefonoAlternativo").val(modelo.telefonoAlternativo);
+            $("#txtCorreoElectronico").val(modelo.correoElectronico);
+            $("#txtCorreoElectronicoAlternativo").val(modelo.correoElectronicoAlternativo);
+            $("#txtDireccion").val(modelo.direccion);
+            $("#txtDireccionAlternativa").val(modelo.direccionAltenativa);
+
+            $(".modal").modal("show");
+        }
+
+        $("#btnNuevo").click(() => {
+            $("#txtIdentificacion").prop("disabled", false);
+            mostrarModal(Modelo_base);
+            $("#txtIdRegistro").val("0");
+        })
+
+        $("#btnGuardar").click(() => {
+
+            if ($("#txtIdentificacion").val() === "" ||
+                $("#txtNombre").val() === "" ||
+                $("#txtApellidos").val() === "" ||
+                $("#txtFechaNacimiento").val() === "") {
+                alert("Por favor complete la información obligatoria: documento de identidad, nombres, apellidos y fecha de nacimiento.");
+                return;
+            }
+
+            var regex = /^[a-zA-Z\s]*$/;
+            if (!regex.test($("#txtNombre").val()) || !regex.test($("#txtApellidos").val())) {
+                alert("Los nombres y apellidos solo pueden contener caracteres del alfabeto latino.");
+                return;
+            }
+
+            if ($("#txtCorreoElectronico").val() === "" &&
+                $("#txtDireccion").val() === "" &&
+                $("#txtCelular").val() === "" &&
+                $("#txtTelefonoAlternativo").val() === "" &&
+                $("#txtCorreoElectronicoAlternativo").val() === "" &&
+                $("#txtDireccionAlternativa").val() === "") {
+                alert("Debe registrar al menos una información de contacto: correo electrónico o dirección.");
+                return;
+            }
+
+            var NuevoModelo = Modelo_base;
+            NuevoModelo["idRegistro"] = $("#txtIdRegistro").val();
+            NuevoModelo["identificacion"] = $("#txtIdentificacion").val();
+            NuevoModelo["nombres"] = $("#txtNombre").val();
+            NuevoModelo["apellidos"] = $("#txtApellidos").val();
+            NuevoModelo["fechaNacimiento"] = $("#txtFechaNacimiento").val();
+            NuevoModelo["celular"] = $("#txtCelular").val();
+            NuevoModelo["telefonoAlternativo"] = $("#txtTelefonoAlternativo").val();
+            NuevoModelo["correoElectronico"] = $("#txtCorreoElectronico").val();
+            NuevoModelo["correoElectronicoAlternativo"] = $("#txtCorreoElectronicoAlternativo").val();
+            NuevoModelo["direccion"] = $("#txtDireccion").val();
+            NuevoModelo["direccionAltenativa"] = $("#txtDireccionAlternativa").val();
+
+            fetch("Home/GetById?id=" + $("#txtIdentificacion").val(), {
+                method: "GET",
+            })
+                .then((response) => {
+                    return response.ok ? response.json() : Promise.reject(response);
+                })
+                .then((dataJson) => {
+                    if (dataJson.valor && $("#txtIdRegistro").val() == "0") {
+                        // Si se está creando un nuevo registro y se encuentra uno existente con la misma identificación, se detiene y retorna
+                        alert("El numero de identificación ya se encuentra registrado " + dataJson.valor.identificacion);
+                        return;
+                    }
+
+                    if ($("#txtIdRegistro").val() == "0") {
+                        fetch("Home/Create", {
+                            method: "POST",
+                            headers: {
+                                'Content-Type': 'application/json;charset=utf-8'
+                            },
+                            body: JSON.stringify(NuevoModelo)
+                        })
+                            .then((response) => {
+                                return response.ok ? response.json() : Promise.reject(response);
+                            })
+                            .then((dataJson) => {
+                                if (dataJson.valor) {
+                                    alert("registrado");
+                                    $(".modal").modal("hide");
+                                    listaRegistro();
+                                }
+                            })
+                            .catch((error) => {
+                                console.error("Error:", error);
+                            });
+                    } else {
+                        fetch("Home/Actualizar", {
+                            method: "PUT",
+                            headers: {
+                                'Content-Type': 'application/json;charset=utf-8'
+                            },
+                            body: JSON.stringify(NuevoModelo)
+                        })
+                            .then((response) => {
+                                return response.ok ? response.json() : Promise.reject(response);
+                            })
+                            .then((dataJson) => {
+                                if (dataJson.valor) {
+                                    alert("editado");
+                                    $(".modal").modal("hide");
+                                    listaRegistro();
+                                }
+                            })
+                            .catch((error) => {
+                                console.error("Error:", error);
+                            });
+                    }
+                })
+                .catch((error) => {
+                    console.error("Error:", error);
+                });
+        });
+
+
+
+
+        function listaRegistro(){
+            fetch("Home/GetAll")
+                .then((response) => {
+                    return response.ok ? response.json() : Promise.reject(response)
+                })
+                .then((dataJson) => {
+                    $("#tbRegistro tbody").html("");
+                    dataJson.forEach((item) => {
+                        $("#tbRegistro tbody").append(
+                            $("<tr>").append(
+                                $("<td>").text(item.identificacion),
+                                $("<td>").text(item.nombres),
+                                $("<td>").text(item.apellidos),
+                                $("<td>").text(item.fechaNacimiento),
+                                $("<td>").text(item.celular),
+                                $("<td>").text(item.telefonoAlternativo),
+                                $("<td>").text(item.correoElectronico),
+                                $("<td>").text(item.correoElectronicoAlternativo),
+                                $("<td>").text(item.direccion),
+                                $("<td>").text(item.direccionAltenativa),
+                                $("<button>").addClass("btn btn-primary btn-sm me-2 btn-editar").data("modelo", item).text("Editar"),
+                                $("<button>").addClass("btn btn-danger btn-sm btn-eliminar").data("id", item.idRegistro).text("Eliminar")
+                        )
+                        )
+
+                    })
+                })
+        }
+
+        $("#tbRegistro tbody").on("click", ".btn-editar", function () {
+            $("#txtIdentificacion").prop("disabled", true);
+            let registro = $(this).data("modelo")
+            mostrarModal(registro);
+        })
+
+        $("#tbRegistro tbody").on("click", ".btn-eliminar", function () {
+            let idRegistro = $(this).data("id")
+
+            let result = window.confirm("¿Esta seguro de eliminar el registro?");
+            if(result){
+
+                fetch("Home/Delete?id="+ idRegistro, {
+                    method: "DELETE",
+                })
+                    .then((response) => {
+                        return response.ok ? response.json() : Promise.reject(response)
+                    })
+                    .then((dataJson) => {
+                        if (dataJson.valor) {
+                            alert("eliminado");
+                            $(".modal").modal("hide");
+                            listaRegistro();
+                        }
+                    })
+            }
+        })
+    </script>
+}
